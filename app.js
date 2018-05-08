@@ -19,14 +19,16 @@ app.set('view engine', 'ejs');
 var sessionOptions = {
   secret:"asdsdadsdadas",
   resave:true,
-  rolling:true,
+  rolling: true,
   saveUninitialized:true,
-  cookie:{
-    maxAge:22000
+  cookie: {
+    maxAge: 6*1000,
+    httpOnly: true,
+    secure: false,
   },
   store: new RedisStore({
     client: redisClient,
-    ttl:  60 * 60
+    ttl:  6
   })
 }
 
