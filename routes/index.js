@@ -5,6 +5,7 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   // res.render('index', { title: 'Express' });
   // res.json({a:req.session,b:req.sessionID,id:process.pid})
+  req.session.user = JSON.stringify({name:"3343434werw"})
   res.send("222")
 });
 
