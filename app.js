@@ -7,8 +7,9 @@ var session = require('express-session');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var RedisStore = require('connect-redis')(session);
-var redis = require("redis"),
-redisClient = redis.createClient();
+var redis = require("redis");
+var redisClient = redis.createClient();
+var fs = require('fs');
 var app = express();
 
 // view engine setup
@@ -33,8 +34,9 @@ var sessionOptions = {
 }
 
 app.use(session(sessionOptions))
-
-app.use(logger('dev'));
+var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'})
+app.use(logger('short',{stream:accessLogStream}));
+// app.use(logger('combined', {stream: accessLogStream}))
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
