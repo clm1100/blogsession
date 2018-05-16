@@ -13,17 +13,7 @@ var fs = require('fs');
 var app = express();
 
 var useradmin = {username:123,password:123,id:"111"}
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy
-passport.serializeUser(function(user, done) {
-  console.log('3、将用户的id序列化进session中')
-  done(null, user.id);
-});
- 
-passport.deserializeUser(function(id, done) {
-  console.log("4、在session中获取用户")
-    done(null, useradmin);
-});
+
 
 
 
@@ -50,19 +40,6 @@ var sessionOptions = {
 }
 
 app.use(session(sessionOptions))
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    console.log("1、获取上传的数据")
-      if(useradmin.username == username&&useradmin.password == password){
-        console.log('2、验证证据返回回调')
-        return done(null,useradmin,"测试数据")
-      }else{
-        return done(null,false)
-      }
-  }
-));
 
 // var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'})
 // app.use(logger('short',{stream:accessLogStream}));
@@ -82,36 +59,26 @@ app.use('/users', usersRouter);
 //   console.log("22222");
 //   res.send("33333")
 // }))
-app.post('/login', function(req,res,next){
-  console.log("进来了")
-  passport.authenticate('local', function(err, user, info) {
-    console.log("2.1、回调执行",info)
-    if (err) return next(err);
-    if (!user) {
-      req.flash('errors', { msg: info.message });
-      return res.send("卡了")
-    }
-    req.logIn(user, function(err) {
-      if (err) return next(err);
-      res.json({ msg: '登录成功！' });
-    });
-  })(req,res,next)
-}
-);
 
+const sleep = ms => new Promise(r => setTimeout(r, ms))
 app.get('/login',(req,res)=>{
-  res.send("未登录")
-})
-var isAuthenticated = function(req, res, next) {
-  console.log(req.isAuthenticated())
-  if (req.isAuthenticated()) return next();
-  res.send("没有登录")
-};
+  // res.send("未登录")
+  res.type('html');   
+  res.write('loading...<br>')
 
-app.get('/logined',isAuthenticated,function(req,res){
-  console.log(req.user);
-  res.send('ok')
+  return sleep(2000).then(function() {
+    res.write(`timer: 2000ms<br>`)
+    return sleep(5000)
+  })
+  .then(function() {
+    res.write(`timer: 5000ms<br>`)
+  }).then(function() {
+    res.end()
+  })
 })
+
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
